@@ -17,10 +17,8 @@ class CreateFaker:
     def __str__(self) -> str:
         if len(self.content.keys()) == 0:
             return None
-        elif len(self.content.keys()) == 1:
-            return str(tuple(self.content.values()))
         else:
-            return self.content     # bug: 字典不能作为返回值
+            return str(tuple(self.content.values()))
 
     def name(self) -> tuple:
         """Create a series of names.
@@ -45,19 +43,21 @@ class CreateFaker:
             # 如果获取得到，则用字符串切片，提取已有后面的数字
             # 为数字+1，当做列名
             __name = name
-            while self.content.get(__name) == None:
+            while self.content.get(__name):
                 if name[len(name):]:
                     __num = name[len(name):]
                     __num += 1
                 else:
                     __num = 1
                 __name = name + str(__num)
+            self.content[__name] = c
         else:
             self.content[name] = c
 
 
 if __name__ == "__main__":
     cf = CreateFaker()
+    names = cf.name()
     names = cf.name()
     print(cf.content)
     print(cf)
