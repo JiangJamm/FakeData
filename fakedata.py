@@ -4,6 +4,9 @@ import sys
 
 
 class CreateFaker:
+
+    #-----内置方法-----#
+
     def __init__(self, locale='zh_CN') -> None:
         """Init a Faker object.
 
@@ -19,6 +22,8 @@ class CreateFaker:
             return None
         else:
             return str(tuple(self.content.values()))
+
+    #-----生成假数据-----#
 
     def name(self) -> tuple:
         """Create a series of names.
@@ -37,6 +42,8 @@ class CreateFaker:
         self._add(sys._getframe().f_code.co_name, names)
 
         return names
+
+    #-----内置操作-----#
 
     def _add(self, name, c) -> None:
         if self.content.get(name):
