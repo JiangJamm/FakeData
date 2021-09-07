@@ -1,23 +1,63 @@
 from faker import Faker
+from pandas import DataFrame
+import sys
 
 
 class CreateFaker:
     def __init__(self, locale='zh_CN') -> None:
-        self.faker = Faker(locale=locale)
+        """Init a Faker object.
 
-    def name(self):
-        namelist = []
+        Args:
+            locale (str, optional): [description]. Defaults to 'zh_CN'.
+        """
+
+        self.faker = Faker(locale=locale)
+        self.content = {}
+
+    def __str__(self) -> str:
+        if len(self.content.keys()) == 0:
+            return None
+        elif len(self.content.keys()) == 1:
+            return str(tuple(self.content.values()))
+        else:
+            return self.content     # bug: 字典不能作为返回值
+
+    def name(self) -> tuple:
+        """Create a series of names.
+
+        Returns:
+            tuple: [names]
+        """
+
+        _namelist = []
         num = int(input('请输入要生成的名字数量:'))
         for _ in range(num):
-            namelist.append(self.faker.name())
-        return tuple(namelist)
+            _namelist.append(self.faker.name())
 
+        names = tuple(_namelist)
 
-def output(path='./', type='csv'):
-    pass
+        self._add(sys._getframe().f_code.co_name, names)
+
+        return names
+
+    def _add(self, name, c) -> None:
+        if self.content.get(name):
+            # 如果获取得到，则用字符串切片，提取已有后面的数字
+            # 为数字+1，当做列名
+            __name = name
+            while self.content.get(__name) == None:
+                if name[len(name):]:
+                    __num = name[len(name):]
+                    __num += 1
+                else:
+                    __num = 1
+                __name = name + str(__num)
+        else:
+            self.content[name] = c
 
 
 if __name__ == "__main__":
     cf = CreateFaker()
     names = cf.name()
-    print(names)
+    print(cf.content)
+    print(cf)
