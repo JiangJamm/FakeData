@@ -1,3 +1,13 @@
+# -*- encoding: utf-8 -*-
+'''
+@File    :   fakedata.py
+@Time    :   2021/09/07 11:44:11
+@Author  :   Jimmy Yu
+@Version :   0.2
+@Contact :   haozijimmy@hotmail.com
+'''
+
+
 from faker import Faker
 from pandas import DataFrame
 import sys
