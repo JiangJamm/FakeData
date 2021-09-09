@@ -44,6 +44,7 @@ class CreateFaker:
 
         _namelist = []
         num = int(input('请输入要生成的名字数量:'))
+        # 生成num个name
         for _ in range(num):
             _namelist.append(self.faker.name())
 
@@ -56,20 +57,21 @@ class CreateFaker:
     #-----内置操作-----#
 
     def _add(self, name, c) -> None:
+        __name = name
         if self.content.get(name):
             # 如果获取得到，则用字符串切片，提取已有后面的数字
             # 为数字+1，当做列名
-            __name = name
+
             while self.content.get(__name):
+                # 如果类别后面带数字
                 if name[len(name):]:
                     __num = name[len(name):]
                     __num += 1
                 else:
                     __num = 1
                 __name = name + str(__num)
-            self.content[__name] = c
-        else:
-            self.content[name] = c
+        # 将生成的数据添加进字典中
+        self.content[__name] = c
 
 
 if __name__ == "__main__":
