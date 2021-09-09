@@ -11,6 +11,7 @@
 from faker import Faker
 from pandas import DataFrame
 import sys
+import csv
 
 
 class CreateFaker:
@@ -50,20 +51,18 @@ class CreateFaker:
 
         names = tuple(_namelist)
 
+        # 传入类名和名字元组
         self._add(sys._getframe().f_code.co_name, names)
 
         return names
 
     #-----内置操作-----#
 
-    def _add(self, name, c) -> None:
+    def _add(self, name, data) -> None:
         __name = name
         if self.content.get(name):
-            # 如果获取得到，则用字符串切片，提取已有后面的数字
-            # 为数字+1，当做列名
-
             while self.content.get(__name):
-                # 如果类别后面带数字
+                # 如果类别后面带数字，则提取数字，为数字+1
                 if name[len(name):]:
                     __num = name[len(name):]
                     __num += 1
@@ -71,7 +70,23 @@ class CreateFaker:
                     __num = 1
                 __name = name + str(__num)
         # 将生成的数据添加进字典中
-        self.content[__name] = c
+        self.content[__name] = data
+
+    def to_csv(self, path='./faker.csv', encoding='utf-8'):
+        __fieldnames = list(self.content.keys())
+        with open(path, 'w', encoding=encoding) as f:
+            __writer = csv.DictWriter(f, fieldnames=__fieldnames)
+            __writer.writeheader()
+            __writer.writerows(self.content)
+
+
+    def save(self, type='csv', path='./', encoding='utf-8'):
+        # csv/xlsx/txt/df
+        if path:
+            pass
+        if type=='csv':
+            self.to_csv(path, encoding)
+
 
 
 if __name__ == "__main__":
