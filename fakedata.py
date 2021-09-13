@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 '''
 @File    :   fakedata.py
-@Time    :   2021/09/07 11:44:11
+@Time    :   2021/09/13 15:30:00
 @Author  :   Jimmy Yu
-@Version :   0.2
+@Version :   0.3
 @Contact :   haozijimmy@hotmail.com
 '''
 
@@ -12,6 +12,7 @@ from faker import Faker
 from pandas import DataFrame
 import sys
 import csv
+from openpyxl import Workbook
 
 
 class CreateFaker:
@@ -23,6 +24,11 @@ class CreateFaker:
 
         Args:
             locale (str, optional): [description]. Defaults to 'zh_CN'.
+
+        self.content:
+            {class: (faker1, faker2, faker3, ...),
+            class2: (faker1, faker2, faker3, ...),
+            ...}
         """
 
         self.faker = Faker(locale=locale)
@@ -72,20 +78,41 @@ class CreateFaker:
         # 将生成的数据添加进字典中
         self.content[__name] = data
 
-    def to_csv(self, path='./faker.csv', encoding='utf-8'):
+    def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
         __fieldnames = list(self.content.keys())
         with open(path, 'w', encoding=encoding) as f:
             __writer = csv.DictWriter(f, fieldnames=__fieldnames)
             __writer.writeheader()
             __writer.writerows(self.content)
 
+    def to_xlsx(self, path='./fakedata.xlsx'):
+        __wb = Workbook()
+        __ws = __wb.active
+        __header = tuple(self.content.keys())
+        __data = tuple(self.content.values())
+        __ws.append(__header)
+        for __row in __data:
+            __ws.append(__row)
+        __wb.save(path)
 
-    def save(self, type='csv', path='./', encoding='utf-8'):
+
+    def save(self, type='csv', path='', encoding='utf-8'):
         # csv/xlsx/txt/df
         if path:
-            pass
+            __path = path
+        else:
+            # 如果要生成df，不需要路径
+            if type == 'df':
+                pass
+            __path = '{}fakedata.{}'.format()
         if type=='csv':
-            self.to_csv(path, encoding)
+            self.to_csv(path=__path, encoding=encoding)
+        if type=='xlsx':
+            self.to_xlsx(path=__path)
+        if type=='txt':
+            pass
+        if type=='df':
+            pass
 
 
 
