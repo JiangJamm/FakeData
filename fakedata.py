@@ -13,6 +13,7 @@ from pandas import DataFrame
 import sys
 import csv
 from openpyxl import Workbook
+import os
 
 
 class CreateFaker:
@@ -26,9 +27,10 @@ class CreateFaker:
             locale (str, optional): [description]. Defaults to 'zh_CN'.
 
         self.content:
-            {class: (faker1, faker2, faker3, ...),
-            class2: (faker1, faker2, faker3, ...),
-            ...}
+            {class: (faker1, faker2, faker3, ...), 
+            class2: (faker1, faker2, faker3, ...), 
+            ...
+            }
         """
 
         self.faker = Faker(locale=locale)
@@ -95,6 +97,34 @@ class CreateFaker:
             __ws.append(__row)
         __wb.save(path)
 
+    def to_txt(self, path='./fakedata.xlsx', encoding='utf-8'):
+        """保存为txt，以逗号为分隔符
+
+        Args:
+            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.xlsx'.
+            encoding (str, optional): encoding. Defaults to 'utf-8'.
+        """
+        # 先保存为csv，然后再转为txt
+        self.to_csv(path=path, encoding=encoding)
+        os.replace(path, path[:-4]+'.txt')
+
+    def to_DataFrame(self) -> DataFrame:
+        # # 判断header有效性
+        # if header:
+        #     _header = header
+        #     # 判断传入表头的长度是否与原数据相同
+        #     if not len(_header) == len(self.content):
+        #         raise FakerError('Length Error')
+
+        # else:
+        #     _header = list(self.content.keys())
+
+        # 转换为DataFrame
+        df = DataFrame(self.content)
+
+        # bug: 长度不同会报错，需要增加判断
+
+        return df
 
     def save(self, type='csv', path='', encoding='utf-8'):
         # csv/xlsx/txt/df
@@ -105,15 +135,16 @@ class CreateFaker:
             if type == 'df':
                 pass
             __path = '{}fakedata.{}'.format()
-        if type=='csv':
+        if type == 'csv':
             self.to_csv(path=__path, encoding=encoding)
-        if type=='xlsx':
+        if type == 'xlsx':
             self.to_xlsx(path=__path)
-        if type=='txt':
-            pass
-        if type=='df':
-            pass
+        if type == 'txt':
+            self.to_txt(path=__path)
 
+
+class FakerError(ValueError):
+    pass
 
 
 if __name__ == "__main__":
@@ -122,3 +153,5 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
+    df = cf.to_DataFrame()
+    print(df)
