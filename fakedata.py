@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 '''
 @File    :   fakedata.py
-@Time    :   2021/09/13 15:30:00
+@Time    :   2021/09/22 17:52:00
 @Author  :   Jimmy Yu
-@Version :   0.3
+@Version :   0.4
 @Contact :   haozijimmy@hotmail.com
 '''
 
@@ -11,8 +11,6 @@
 from faker import Faker
 from pandas import DataFrame
 import sys
-import csv
-from openpyxl import Workbook
 import os
 
 
@@ -80,16 +78,24 @@ class CreateFaker:
         # 将生成的数据添加进字典中
         self.content[__name] = data
 
+    def _is_same_length(self, content: dict) -> bool:
+        for c in content:
+            _len = len(content[c])
+            # 判断字典中每个值得列表长度是否相等，相等则返回True
+            # if _
+
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
+        # bug: 字典长度不同导致报错
         __df = DataFrame(self.content)
         __df.to_csv(path, index=False, encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
+        # bug: 字典长度不同导致报错
         __df = DataFrame(self.content)
         __df.to_excel(path, index=False)
 
     def to_txt(self, path='./fakedata.xlsx', encoding='utf-8'):
-        """保存为txt，以逗号为分隔符
+        """保存为txt，以逗号为分隔符。依赖于to_csv()。
 
         Args:
             path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.xlsx'.
@@ -100,6 +106,9 @@ class CreateFaker:
         os.rename(path, path[:-4]+'.txt')
 
     def to_DataFrame(self) -> DataFrame:
+    # bug: 每列数据长度不同会报错，需要增加判断
+    # feature: (P2)可以自己修改表头
+
         # # 判断header有效性
         # if header:
         #     _header = header
@@ -112,8 +121,6 @@ class CreateFaker:
 
         # 转换为DataFrame
         _df = DataFrame(self.content)
-
-        # bug: 每列数据长度不同会报错，需要增加判断
 
         return _df
 
@@ -131,6 +138,7 @@ class CreateFaker:
         if type == 'txt':
             self.to_txt(path=__path)
 
+
 # 报错控制
 class FakerError(ValueError):
     pass
@@ -142,4 +150,4 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    cf.save(type='txt')
+    cf.save(type='csv')
