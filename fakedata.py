@@ -85,14 +85,8 @@ class CreateFaker:
         __df.to_csv(path, index=False, encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
-        __wb = Workbook()
-        __ws = __wb.active
-        __header = tuple(self.content.keys())
-        __data = tuple(self.content.values())
-        __ws.append(__header)
-        for __row in __data:
-            __ws.append(__row)
-        __wb.save(path)
+        __df = DataFrame(self.content)
+        __df.to_excel(path, index=False)
 
     def to_txt(self, path='./fakedata.xlsx', encoding='utf-8'):
         """保存为txt，以逗号为分隔符
@@ -103,7 +97,7 @@ class CreateFaker:
         """
         # 先保存为csv，然后再转为txt
         self.to_csv(path=path, encoding=encoding)
-        os.replace(path, path[:-4]+'.txt')
+        os.rename(path, path[:-4]+'.txt')
 
     def to_DataFrame(self) -> DataFrame:
         # # 判断header有效性
@@ -117,18 +111,19 @@ class CreateFaker:
         #     _header = list(self.content.keys())
 
         # 转换为DataFrame
-        df = DataFrame(self.content)
+        _df = DataFrame(self.content)
 
         # bug: 每列数据长度不同会报错，需要增加判断
 
-        return df
+        return _df
 
     def save(self, type='csv', path='', encoding='utf-8'):
-        # csv/xlsx/txt/df
+        # csv/xlsx/txt
         if path:
             __path = path
         else:
             __path = '{}fakedata.{}'.format('./', type)
+
         if type == 'csv':
             self.to_csv(path=__path, encoding=encoding)
         if type == 'xlsx':
@@ -136,7 +131,7 @@ class CreateFaker:
         if type == 'txt':
             self.to_txt(path=__path)
 
-
+# 报错控制
 class FakerError(ValueError):
     pass
 
@@ -147,4 +142,4 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    cf.save()
+    cf.save(type='txt')
