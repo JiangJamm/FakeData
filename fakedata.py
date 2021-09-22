@@ -81,11 +81,8 @@ class CreateFaker:
         self.content[__name] = data
 
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
-        __fieldnames = list(self.content.keys())
-        with open(path, 'w', encoding=encoding) as f:
-            __writer = csv.DictWriter(f, fieldnames=__fieldnames)
-            __writer.writeheader()
-            __writer.writerows(self.content)
+        __df = DataFrame(self.content)
+        __df.to_csv(path,index=False , encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
         __wb = Workbook()
@@ -122,7 +119,7 @@ class CreateFaker:
         # 转换为DataFrame
         df = DataFrame(self.content)
 
-        # bug: 长度不同会报错，需要增加判断
+        # bug: 每列数据长度不同会报错，需要增加判断
 
         return df
 
@@ -131,10 +128,7 @@ class CreateFaker:
         if path:
             __path = path
         else:
-            # 如果要生成df，不需要路径
-            if type == 'df':
-                pass
-            __path = '{}fakedata.{}'.format()
+            __path = '{}fakedata.{}'.format('./', type)
         if type == 'csv':
             self.to_csv(path=__path, encoding=encoding)
         if type == 'xlsx':
@@ -153,5 +147,4 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    df = cf.to_DataFrame()
-    print(df)
+    cf.save()
