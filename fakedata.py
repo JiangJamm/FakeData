@@ -82,7 +82,7 @@ class CreateFaker:
 
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
         __df = DataFrame(self.content)
-        __df.to_csv(path,index=False , encoding=encoding)
+        __df.to_csv(path, index=False, encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
         __wb = Workbook()
