@@ -79,10 +79,18 @@ class CreateFaker:
         self.content[__name] = data
 
     def _is_same_length(self, content: dict) -> bool:
+        __check = set()
         for c in content:
-            _len = len(content[c])
+            __check.add(len(content[c]))
             # 判断字典中每个值得列表长度是否相等，相等则返回True
-            # if _
+        if len(__check) != 1:
+            return False
+
+        return True
+
+    #-----保存方法-----#
+
+    # feature: 保存如果长度不同，可传入参数选择丢弃列(P2)或者报错(P0)
 
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
         # bug: 字典长度不同导致报错
@@ -150,4 +158,5 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    cf.save(type='csv')
+    c = cf._is_same_length(cf.content)
+    print(c)
