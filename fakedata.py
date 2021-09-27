@@ -8,6 +8,7 @@
 '''
 
 
+from typing import List
 from faker import Faker
 from pandas import DataFrame
 import sys
@@ -90,15 +91,11 @@ class CreateFaker:
 
     #-----保存方法-----#
 
-    # feature: 保存如果长度不同，可传入参数选择丢弃列(P2)或者报错(P0)
-
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
-        # bug: 字典长度不同导致报错
         __df = DataFrame(self.content)
         __df.to_csv(path, index=False, encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
-        # bug: 字典长度不同导致报错
         __df = DataFrame(self.content)
         __df.to_excel(path, index=False)
 
@@ -113,22 +110,22 @@ class CreateFaker:
         self.to_csv(path=path, encoding=encoding)
         os.rename(path, path[:-4]+'.txt')
 
-    def to_DataFrame(self) -> DataFrame:
+    def to_DataFrame(self, header: List[str]=[]) -> DataFrame:
     # bug: 每列数据长度不同会报错，需要增加判断
     # feature: (P2)可以自己修改表头
 
-        # # 判断header有效性
-        # if header:
-        #     _header = header
-        #     # 判断传入表头的长度是否与原数据相同
-        #     if not len(_header) == len(self.content):
-        #         raise FakerError('Length Error')
-
-        # else:
-        #     _header = list(self.content.keys())
-
-        # 转换为DataFrame
-        _df = DataFrame(self.content)
+        # 判断header有效性
+        if header:
+            _header = header
+            # 判断传入表头的长度是否与原数据相同
+            if not len(_header) == len(self.content):
+                raise FakerError('Header Length Error')
+            else:
+                _df = DataFrame(self.content)
+                _df.columns = _header
+        else:
+            # 转换为DataFrame
+            _df = DataFrame(self.content)
 
         return _df
 
@@ -158,5 +155,6 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    c = cf._is_same_length(cf.content)
-    print(c)
+    header = ['名', 21]
+    df = cf.to_DataFrame(header=header)
+    print(df)
