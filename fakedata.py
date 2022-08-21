@@ -154,7 +154,7 @@ class CreateFaker:
 
         return _df
 
-    def save(self, filetype: str='csv', path: str, encoding: Optional[str]='utf-8'):
+    def save(self, filetype: str='csv', path: Optional[str]='', encoding: Optional[str]='utf-8'):
         '''
         保存为文件类型，默认为csv
 
@@ -165,16 +165,16 @@ class CreateFaker:
         '''
         # csv/xlsx/txt
         if path:
-            __path = path
+            path = path
         else:
-            __path = '{}fakedata.{}'.format('./', filetype)
+            path = '{}fakedata.{}'.format('./', filetype)
 
         if filetype == 'csv':
-            self.to_csv(path=__path, encoding=encoding)
+            self.to_csv(path=path, encoding=encoding)
         if filetype == 'xlsx':
-            self.to_xlsx(path=__path)
+            self.to_xlsx(path=path)
         if filetype == 'txt':
-            self.to_txt(path=__path)
+            self.to_txt(path=path)
 
 
 # 报错控制
@@ -188,6 +188,6 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    header = ['名1', 'name2']
+    header = ['name1', 'name2']
     df = cf.to_DataFrame(header=header)
     print(df)
