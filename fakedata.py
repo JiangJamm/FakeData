@@ -8,7 +8,7 @@
 '''
 
 
-from typing import List
+from typing import List, Optional
 from faker import Faker
 from pandas import DataFrame
 import sys
@@ -20,13 +20,14 @@ class CreateFaker:
     #-----内置方法-----#
 
     def __init__(self, locale='zh_CN') -> None:
-        """Init a Faker object.
+        """
+        Init a Faker object.
 
-        Args:
+        ### Paraments:
             locale (str, optional): [description]. Defaults to 'zh_CN'.
 
         self.content:
-            {class: (faker1, faker2, faker3, ...), 
+            {class1: (faker1, faker2, faker3, ...), 
             class2: (faker1, faker2, faker3, ...), 
             ...
             }
@@ -44,9 +45,10 @@ class CreateFaker:
     #-----生成假数据-----#
 
     def name(self) -> tuple:
-        """Create a series of names.
+        """
+        Create a series of names.
 
-        Returns:
+        ### Returns:
             tuple: [names]
         """
 
@@ -92,27 +94,50 @@ class CreateFaker:
     #-----保存方法-----#
 
     def to_csv(self, path='./fakedata.csv', encoding='utf-8'):
+        '''
+        Output to csv file. 逗号为分隔符。
+
+        ### Paraments:
+            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.csv'.
+            encoding (str, optional): encoding. Defaults to 'utf-8'.
+        '''
         __df = DataFrame(self.content)
         __df.to_csv(path, index=False, encoding=encoding)
 
     def to_xlsx(self, path='./fakedata.xlsx'):
+        '''
+        Output to Excel file.
+
+        ### Paraments:
+            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.xlsx'.
+        '''
         __df = DataFrame(self.content)
         __df.to_excel(path, index=False)
 
-    def to_txt(self, path='./fakedata.xlsx', encoding='utf-8'):
-        """保存为txt，以逗号为分隔符。依赖于to_csv()。
+    def to_txt(self, path='./fakedata.txt', encoding='utf-8'):
+        """
+        保存为txt，以逗号为分隔符。依赖于to_csv()。
 
-        Args:
-            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.xlsx'.
+        ### Paraments:
+            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.txt'.
             encoding (str, optional): encoding. Defaults to 'utf-8'.
         """
         # 先保存为csv，然后再转为txt
         self.to_csv(path=path, encoding=encoding)
         os.rename(path, path[:-4]+'.txt')
 
-    def to_DataFrame(self, header: List[str]=[]) -> DataFrame:
-    # bug: 每列数据长度不同会报错，需要增加判断
-    # feature: (P2)可以自己修改表头
+    def to_DataFrame(self, header: List[str]) -> DataFrame:
+        '''
+        返回一个 DataFrame 对象。
+
+        ### Paraments:
+            header (List[str], must): 传入表头，必需。
+
+        ### Return:
+            DataFrame
+        '''
+        # bug: 每列数据长度不同会报错，需要增加判断
+        # feature: (P2)可以自己修改表头
 
         # 判断header有效性
         if header:
@@ -129,18 +154,26 @@ class CreateFaker:
 
         return _df
 
-    def save(self, type='csv', path='', encoding='utf-8'):
+    def save(self, filetype: str='csv', path: str, encoding: Optional[str]='utf-8'):
+        '''
+        保存为文件类型，默认为csv
+
+        ### Paraments:
+            filetype (str, optional): 文件类型，默认为csv。可选：csv/xlsx/txt。
+            path (str, optional): 文件路径，需要写清楚文件名和后缀. Defaults to './fakedata.csv'.
+            encoding (str, optional): encoding. Defaults to 'utf-8'.
+        '''
         # csv/xlsx/txt
         if path:
             __path = path
         else:
-            __path = '{}fakedata.{}'.format('./', type)
+            __path = '{}fakedata.{}'.format('./', filetype)
 
-        if type == 'csv':
+        if filetype == 'csv':
             self.to_csv(path=__path, encoding=encoding)
-        if type == 'xlsx':
+        if filetype == 'xlsx':
             self.to_xlsx(path=__path)
-        if type == 'txt':
+        if filetype == 'txt':
             self.to_txt(path=__path)
 
 
@@ -155,6 +188,6 @@ if __name__ == "__main__":
     names = cf.name()
     print(cf.content)
     print(cf)
-    header = ['名', 21]
+    header = ['名1', 'name2']
     df = cf.to_DataFrame(header=header)
     print(df)
