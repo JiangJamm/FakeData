@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
 '''
 @File    :   fakedata.py
-@Time    :   2021/09/27 17:50:00
+@Time    :   2022/08/21 21:00:00
 @Author  :   Jimmy Yu
-@Version :   0.5
+@Version :   0.6
 @Contact :   haozijimmy@hotmail.com
 '''
 
 
 from typing import List, Optional
+from warnings import warn
 from faker import Faker
 from pandas import DataFrame
 import sys
@@ -44,16 +45,18 @@ class CreateFaker:
 
     #-----生成假数据-----#
 
-    def name(self) -> tuple:
+    def name(self, num: int) -> tuple:
         """
         Create a series of names.
 
+        ### Paramers:
+            num (int): 要生成的数量
+
         ### Returns:
-            tuple: [names]
+            tuple ([names]): 返回num个名字组成的元组
         """
 
         _namelist = []
-        num = int(input('请输入要生成的名字数量:'))
         # 生成num个name
         for _ in range(num):
             _namelist.append(self.faker.name())
@@ -61,13 +64,24 @@ class CreateFaker:
         names = tuple(_namelist)
 
         # 传入类名和名字元组
-        self._add(sys._getframe().f_code.co_name, names)
+        self._add_col(sys._getframe().f_code.co_name, names)
 
         return names
 
     #-----内置操作-----#
 
-    def _add(self, name, data) -> None:
+    def _add_col(self, name, data) -> None:
+        '''
+        添加一列数据
+        '''
+        # # 如果已经有数据，需要判断数据长度是否一致
+        # if self.content:
+        #     if self.is_same_len(data, self.content):
+        #         pass
+        #     else:
+        #         msg = f'第{len(self.content)+1}列的长度与其他不一致，注意无法导出为DataFrame。'
+        #         warn(message=msg)
+
         __name = name
         if self.content.get(name):
             while self.content.get(__name):
@@ -81,14 +95,21 @@ class CreateFaker:
         # 将生成的数据添加进字典中
         self.content[__name] = data
 
-    def _is_same_length(self, content: dict) -> bool:
+    def is_same_len(self, addition: list, content: dict) -> bool:
+        '''
+        比较addition与content的长度。
+        '''
+        if len(content[list(content.keys())[0]]) == len(addition):
+            return True
+        return False
+
+    def are_same_length(self, content: dict) -> bool:
         __check = set()
         for c in content:
             __check.add(len(content[c]))
-            # 判断字典中每个值得列表长度是否相等，相等则返回True
+        # 判断字典中每个值的列表长度是否相等，相等则返回True
         if len(__check) != 1:
             return False
-
         return True
 
     #-----保存方法-----#
@@ -136,8 +157,11 @@ class CreateFaker:
         ### Return:
             DataFrame
         '''
-        # bug: 每列数据长度不同会报错，需要增加判断
         # feature: (P2)可以自己修改表头
+        if self.are_same_length(self.content):
+            pass
+        else:
+            raise FakerError('各列长度不同，无法导出为DataFrame格式。')
 
         # 判断header有效性
         if header:
@@ -184,8 +208,9 @@ class FakerError(ValueError):
 
 if __name__ == "__main__":
     cf = CreateFaker()
-    names = cf.name()
-    names = cf.name()
+    names = cf.name(3)
+    names = cf.name(5)
+    # names = cf.name(7)
     print(cf.content)
     print(cf)
     header = ['name1', 'name2']
